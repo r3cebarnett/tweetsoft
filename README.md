@@ -10,7 +10,7 @@ Discord Bot for Modular Twitter Feeds
 ## Planned Usage
 - `.addcategory <category name>`
 - `.addacct <category> <acct>`
-- `.rmcategory <category>
+- `.rmcategory <category>`
 - `.rmacct <category> <acct>`
 
 I would like there to be a system in which everyone can submit requests to add accounts or categories, but only a moderator / admin can approve it. This is certainly on the backlog.

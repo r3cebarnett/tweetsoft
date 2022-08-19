@@ -5,7 +5,7 @@ import tweepy
 
 from discord.ext import commands, tasks
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import sessionmaker
 
 from db import engine, Channel, Account
@@ -57,7 +57,7 @@ async def addacct(ctx: commands.Context, *args: tuple[str]):
         session.add(channel_obj)
 
     # Then check to see if the account exists
-    res = session.query(Account).where(Account.username == account)
+    res = session.query(Account).where(func.lower(Account.username) == func.lower(account))
     account_obj = res.first()
     tweet_id = None
     if not account_obj:
@@ -76,7 +76,6 @@ async def addacct(ctx: commands.Context, *args: tuple[str]):
         session.add(account_obj)
 
     # Then check to see if account has channel
-    print(channel_obj.channel_pid, [c.channel_pid for c in account_obj.channels])
     if channel_obj in account_obj.channels:
         await ctx.send(f"{account} is already registered to {channel.mention}!")
         return
@@ -120,7 +119,7 @@ async def rmacct(ctx: commands.Context, *args: tuple[str]):
         return
 
     # Then check to see if the account exists
-    res = session.query(Account).where(Account.username == account)
+    res = session.query(Account).where(func.lower(Account.username) == func.lower(account))
     account_obj = res.first()
     if not account_obj:
         await ctx.send(f"`{account}` not found in database")

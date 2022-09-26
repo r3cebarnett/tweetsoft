@@ -1,3 +1,4 @@
+import asyncio
 import configparser
 import datetime
 import logging
@@ -146,11 +147,12 @@ async def rmacct(ctx: commands.Context, *args: tuple[str]):
 async def update():
     logging.info("Updating...")
     for acct in session.query(Account):
+        tweets = None
         try:
-            tweets = client.get_users_tweets(acct.twitter_id, exclude="replies", tweet_fields="source", since_id=acct.last_tweet)
+            tweets = client.get_users_tweets(acct.twitter_id, exclude="replies", tweet_fields="source", since_id=acct.last_tweet, max_results=5)
         except tweepy.TwitterServerError as e:
             logging.info(f"Unable to refresh tweets: {e}")
-        if not tweets.data:
+        if not tweets or not tweets.data:
             continue
 
         for tweet in tweets.data[::-1]:
@@ -159,7 +161,13 @@ async def update():
                 dpy_channel = bot.get_channel(int(channel.channel_id))
                 logging.info(f"\t{acct.username} - {channel.channel_id} ({dpy_channel.name})")
                 msg = f"https://fxtwitter.com/{acct.username}/status/{tweet_id}"
-                await dpy_channel.send(msg)
+                while True:
+                    try:
+                        await dpy_channel.send(msg)
+                        break
+                    except Exception as e:
+                        logging.error("ERROR: Unable to send message!! Sleeping 10s")
+                        asyncio.sleep(10)
         acct.last_tweet = tweets.data[0].id
         session.add(acct)
     session.commit()
@@ -169,6 +177,7 @@ async def update():
 async def before_update():
     await bot.wait_until_ready()
 
+update.add_exception_type
 update.start()
 
 bot.run(token)

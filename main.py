@@ -2,8 +2,10 @@ import asyncio
 import configparser
 import datetime
 import logging
+import sys
 import tweepy
 
+import discord
 from discord.ext import commands, tasks
 
 from sqlalchemy import select, func
@@ -29,7 +31,13 @@ if not prefix:
     logging.info("No prefix found in config file... using t. as default")
     prefix = "t."
 
-bot = commands.Bot(command_prefix=prefix)
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix=prefix, intents=intents)
+
+@bot.event
+async def on_ready():
+    update.start()
 
 ## TODO Make a wrapper for checking perms on these
 
@@ -173,11 +181,11 @@ async def update():
     session.commit()
     logging.info("Finished updating")
 
-@update.before_loop
-async def before_update():
-    await bot.wait_until_ready()
+#@update.before_loop
+#async def before_update():
+#    await bot.wait_until_ready()
+#    update.start()
 
-update.add_exception_type
-update.start()
+#update.start()
 
 bot.run(token)

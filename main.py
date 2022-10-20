@@ -42,7 +42,7 @@ async def on_ready():
 ## TODO Make a wrapper for checking perms on these
 
 @bot.command()
-async def addacct(ctx: commands.Context, *args: tuple[str]):
+async def addacct(ctx: commands.Context, *args: tuple):
     logging.info(f"addacct called: {args}")
 
     if len(args) != 2 or len(ctx.message.channel_mentions) != 1:
@@ -105,7 +105,7 @@ async def addacct(ctx: commands.Context, *args: tuple[str]):
 
 
 @bot.command()
-async def rmacct(ctx: commands.Context, *args: tuple[str]):
+async def rmacct(ctx: commands.Context, *args: tuple):
     logging.info(f"rmacct called: {args}")
 
     if len(args) != 2 or len(ctx.message.channel_mentions) != 1:

@@ -1,3 +1,5 @@
+# Notice: Due to Twitter API changes, this bot will no longer function.
+
 # tweetsoft
 Discord Bot for Modular Twitter Feeds
 
